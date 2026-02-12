@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Unit 1 — Quiz</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background:#f9fff9;
+      font-family:'Poppins',sans-serif;
+    }
+    .quiz-container {
+      max-width:800px;
+      margin:auto;
+      padding:40px 20px;
+    }
+    .question-card {
+      display:none;
+      text-align:center;
+    }
+    .question-card.active {
+      display:block;
+      animation:fadeIn .4s ease;
+    }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+    .progress {
+      height:10px;
+      border-radius:20px;
+      overflow:hidden;
+      margin-bottom:25px;
+    }
+    .progress-bar {
+      background-color:#21e271;
+      transition:width 0.4s ease;
+    }
+    .option-btn {
+      display:block;
+      width:100%;
+      border:2px solid #21e271;
+      color:#21e271;
+      border-radius:12px;
+      padding:12px;
+      margin:10px 0;
+      background:white;
+      font-weight:500;
+      transition:all 0.2s ease;
+    }
+    .option-btn:hover { background:#21e271; color:#fff; }
+    .option-btn.selected { background:#21e271; color:#fff; }
+    .nav-btn {
+      font-size:1.2rem;
+      margin:20px;
+    }
+    .finish-btn {
+      display:none;
+      background:#21e271;
+      border:none;
+      color:white;
+      padding:12px 25px;
+      border-radius:10px;
+      font-weight:600;
+    }
+    .result-box {
+      display:none;
+      text-align:center;
+      margin-top:40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h2 class="text-center mb-4">Unit 1 — Introduce Yourself (Quiz)</h2>
+    
+    <!-- Progress Bar -->
+    <div class="progress">
+      <div class="progress-bar" id="progressBar" style="width:0%"></div>
+    </div>
+
+    <!-- Quiz Questions -->
+    {% for q in questions %}
+    <div class="question-card {% if forloop.first %}active{% endif %}" id="q{{ forloop.counter }}">
+      {% if q.image %}
+        <img src="{{ q.image.url }}" class="img-fluid rounded mb-3" style="max-height:220px;">
+      {% endif %}
+      {% if q.video %}
+        <video controls class="w-100 mb-3 rounded">
+          <source src="{{ q.video.url }}" type="video/mp4">
+        </video>
+      {% endif %}
+      <h4 class="mb-3">{{ q.question_text }}</h4>
+      <div class="options">
+        <button class="option-btn" data-correct="{{ q.correct_option }}" data-value="A">{{ q.option_a }}</button>
+        <button class="option-btn" data-correct="{{ q.correct_option }}" data-value="B">{{ q.option_b }}</button>
+        <button class="option-btn" data-correct="{{ q.correct_option }}" data-value="C">{{ q.option_c }}</button>
+        <button class="option-btn" data-correct="{{ q.correct_option }}" data-value="D">{{ q.option_d }}</button>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-center mt-5">No quiz questions available yet.</p>
+    {% endfor %}
+
+    <!-- Navigation -->
+    <div class="text-center mt-3">
+      <button id="prevBtn" class="btn btn-outline-dark nav-btn">← Prev</button>
+      <button id="nextBtn" class="btn btn-outline-dark nav-btn">Next →</button>
+      <button id="finishBtn" class="finish-btn">Finish Quiz</button>
+    </div>
+
+    <!-- Results -->
+    <div id="resultBox" class="result-box">
+      <h3>🎉 Quiz Completed!</h3>
+      <p id="scoreDisplay"></p>
+      <a href="{% url 'lessons:lessons' %}" class="btn btn-success mt-3">Back to Lessons</a>
+    </div>
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll('.question-card');
+    const progressBar = document.getElementById('progressBar');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const finishBtn = document.getElementById('finishBtn');
+    const resultBox = document.getElementById('resultBox');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+
+    let i = 0;
+    let score = 0;
+
+    // Show the current question
+    const showCard = n => {
+      cards.forEach(c => c.classList.remove('active'));
+      cards[n].classList.add('active');
+      progressBar.style.width = `${((n+1)/cards.length)*100}%`;
+      prevBtn.style.display = n === 0 ? "none" : "inline-block";
+      nextBtn.style.display = n === cards.length-1 ? "none" : "inline-block";
+      finishBtn.style.display = n === cards.length-1 ? "inline-block" : "none";
+    };
+    showCard(i);
+
+    nextBtn.onclick = () => { if(i < cards.length-1) { i++; showCard(i); } };
+    prevBtn.onclick = () => { if(i > 0) { i--; showCard(i); } };
+
+    // Select answer
+    document.querySelectorAll('.option-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const parent = btn.closest('.question-card');
+        parent.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
+
+    // Submit quiz
+    finishBtn.onclick = async () => {
+      let correct = 0;
+      document.querySelectorAll('.question-card').forEach(card=>{
+        const selected = card.querySelector('.option-btn.selected');
+        if(selected && selected.dataset.value === selected.dataset.correct){
+          correct++;
+        }
+      });
+      score = Math.round((correct/cards.length)*100);
+      scoreDisplay.textContent = `You scored ${correct} / ${cards.length} (${score}%)`;
+
+      // send completion to backend
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      const res = await fetch("{% url 'lessons:mark_lesson_quiz_completed' %}", {
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':csrfToken},
+        body:`lesson_name=Unit 1 Quiz&score=${score}`
+      });
+      const data = await res.json();
+      console.log(data);
+
+      // show result
+      document.querySelector('.quiz-container').scrollIntoView({behavior:'smooth'});
+      document.querySelectorAll('.question-card').forEach(c=>c.style.display='none');
+      prevBtn.style.display = nextBtn.style.display = finishBtn.style.display = 'none';
+      resultBox.style.display = 'block';
+      progressBar.style.width = '100%';
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>LinguaLearn — Sign in</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/auth2.css' %}"/>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  {% if messages %}
+<div class="alert-container mb-3">
+  {% for message in messages %}
+    {% if message.tags == "error" %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% elif message.tags == "success" %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% else %}
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar app-nav py-3">
+    <div class="container d-flex align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <div class="brand-pill px-3 py-1 on-accent"><a href="#">LinguaLearn</a></div>
+        <span class="text-secondary small">Learn Hindi the fun way</span>
+      </div>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <button id="themeBtn" class="icon-btn" type="button" title="Toggle theme" aria-label="Toggle theme">
+          <i class="bi bi-sun-fill theme-sun"></i>
+          <i class="bi bi-moon-stars-fill theme-moon d-none"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <main id="main" class="container d-flex flex-column align-items-center justify-content-center" style="min-height:calc(100vh - 88px);">
+
+    <!-- Heading -->
+    <div class="text-center mb-3">
+      <h1 class="fw-black" style="font-weight:900; letter-spacing:.3px;">
+        Welcome to <span class="brand-pill px-3 py-1 on-accent"><a href="#">LinguaLearn</a></span>
+      </h1>
+      <p class="text-secondary mt-2">Log in or create an account to start learning.</p>
+    </div>
+
+    <div class="col-12 col-md-9 col-lg-6 col-xl-5">
+      <div class="card rounded-4 shadow-soft">
+        <div class="card-body p-4 p-md-5">
+
+          <!-- 🔔 Django Messages -->
+          {% if messages %}
+          <div class="alert-container mb-3">
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Tabs -->
+          <ul class="nav nav-pills gap-2 mb-4" id="authTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button">
+                <i class="bi bi-door-open me-1"></i> Login
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button">
+                <i class="bi bi-person-plus me-1"></i> Register
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <!-- LOGIN -->
+            <section class="tab-pane fade show active" id="login">
+              <form method="POST" action="{% url 'lessons:login_user' %}" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="loginEmail" class="form-label">Email</label>
+                  <input id="loginEmail" name="email" type="email" class="form-control" placeholder="you@example.com" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="loginPassword" class="form-label">Password</label>
+                  <input id="loginPassword" name="password" type="password" class="form-control" placeholder="••••••••" required minlength="6">
+                  <a class="small d-block mt-1" href="#">Forgot Password?</a>
+                </div>
+
+                <div class="d-grid gap-2">
+                  <button class="btn btn-accent btn-lg" type="submit">
+                    Login <i class="bi bi-arrow-right-short"></i>
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <!-- REGISTER -->
+            <section class="tab-pane fade" id="register">
+              <form method="POST" action="{% url 'lessons:register_user' %}" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label class="form-label">First Name</label>
+                  <input type="text" name="firstName" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Last Name</label>
+                  <input type="text" name="lastName" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Phone</label>
+                  <input type="text" name="phone" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Password</label>
+                  <input type="password" name="password" class="form-control" required minlength="6">
+                </div>
+                <div class="d-grid gap-2">
+                  <button class="btn btn-accent btn-lg" type="submit">Create Account</button>
+                </div>
+              </form>
+            </section>
+          </div>
+
+          <div class="my-4 divider"></div>
+
+          <!-- Alt sign-in -->
+          <div class="text-center">
+            <button class="btn btn-outline-light btn-sm me-2"><i class="bi bi-google"></i> Google</button>
+            <button class="btn btn-outline-light btn-sm"><i class="bi bi-apple"></i> Apple</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Theme persistence
+    (() => {
+      const root = document.documentElement;
+      const btn = document.getElementById('themeBtn');
+      const sun = document.querySelector('.theme-sun');
+      const moon = document.querySelector('.theme-moon');
+      function applyTheme(t){
+        root.setAttribute('data-bs-theme', t);
+        sun.classList.toggle('d-none', t==='dark');
+        moon.classList.toggle('d-none', t!=='dark');
+      }
+      const initial = localStorage.getItem('theme') || 'dark';
+      applyTheme(initial);
+      btn?.addEventListener('click', () => {
+        const next = (root.getAttribute('data-bs-theme') === 'light') ? 'dark' : 'light';
+        applyTheme(next); localStorage.setItem('theme', next);
+      });
+    })();
+  </script>
+</body>
+</html>

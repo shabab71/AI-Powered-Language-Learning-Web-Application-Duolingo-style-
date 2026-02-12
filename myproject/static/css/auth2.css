@@ -1,0 +1,108 @@
+/* ================== DARK THEME (default) ================== */
+    :root{
+      --bg:#0f1720; --panel:#0d1821; --panel-2:#121c26; --border:#1f2b36;
+      --text:#e6f0f6; --sub:#98aebd;
+      --accent:#1fe26a; --accent-ink:#062c15; --accent-700:#19cf60;
+      --ring: 0 0 0 .25rem rgba(31,226,106,.35);
+      --link:#ffffff; --link-hover:#ffffff;
+      --field:#0b141c;
+    }
+
+    /* ================== LIGHT THEME (overrides) ================== */
+    html[data-bs-theme="light"]{
+      --bg:#f6f8fb; --panel:#ffffff; --panel-2:#ffffff; --border:#d9e1ea;
+      --text:#0b1b2b; --sub:#3b4a5a;
+      --accent:#1fe26a; --accent-ink:#062c15; --accent-700:#19cf60;
+      --ring: 0 0 0 .25rem rgba(31,226,106,.25);
+      --link:#0b1b2b; --link-hover:#0b1b2b;
+      --field:#ffffff;
+    }
+
+    /* ================== Base ================== */
+    body{ background:var(--bg); color:var(--text); }
+    a, .link { color:var(--link); text-decoration:none; }
+    a:hover, .link:hover { color:var(--link-hover); text-decoration:underline; }
+
+    /* Navbar */
+    .app-nav{
+      background:linear-gradient(0deg,var(--panel-2),var(--panel));
+      border-bottom:1px solid var(--border);
+      box-shadow:0 6px 24px rgba(0,0,0,.35);
+    }
+    .brand-pill{
+      background:var(--accent); color:var(--accent-ink);
+      border-radius:999px; font-weight:800; letter-spacing:.2px;
+    }
+    .on-accent a{ color:var(--accent-ink)!important; }
+    .on-accent a:hover{ color:var(--accent-ink)!important; text-decoration:underline; }
+
+    /* Card */
+    .card{ background:rgba(14,26,36,.92); border:1px solid var(--border); }
+    html[data-bs-theme="light"] .card{ background:#ffffff; }
+
+    .shadow-soft{ box-shadow:0 16px 48px rgba(0,0,0,.18); }
+
+    /* Buttons */
+    .btn-accent{ background:var(--accent); color:var(--accent-ink); border:0; }
+    .btn-accent:hover{ background:var(--accent-700); color:var(--accent-ink); }
+
+    /* Theme toggle button */
+    .icon-btn{
+      border:1px solid var(--border);
+      background:transparent;
+      color:var(--text);
+      padding:.35rem .6rem;
+      border-radius:10px;
+      line-height:1;
+    }
+    html[data-bs-theme="dark"] .icon-btn:hover{ background:rgba(255,255,255,.06) }
+    html[data-bs-theme="light"] .icon-btn:hover{ background:#eef4f8 }
+
+    /* Pills */
+    .nav-pills .nav-link{ color:#cfe1ec; }
+    html[data-bs-theme="light"] .nav-pills .nav-link{ color:#325066; }
+    .nav-pills .nav-link.active{
+      background:var(--accent); color:var(--accent-ink); font-weight:600;
+    }
+
+    .divider{ height:1px; background:var(--border); }
+
+    /* Forms */
+    .form-control, .form-select{ background:var(--field); border-color:var(--border); color:var(--text); }
+    .form-control::placeholder{ color:#6d8492; }
+    html[data-bs-theme="light"] .form-control::placeholder{ color:#6b7a86; }
+    .form-control:focus, .form-select:focus, .btn:focus{
+      box-shadow:var(--ring); border-color:var(--accent);
+    }
+
+    .otp-input{ letter-spacing:.5ch; text-align:center; font-weight:700; }
+
+    /* Accessibility helpers */
+    .skip-link{ position:absolute; left:-9999px; }
+    .skip-link:focus{ left:1rem; top:1rem; z-index:1000; background:#ffc94d; color:#2b1b00; padding:.25rem .5rem; border-radius:.5rem; }
+
+    /* ===== Django message alerts ===== */
+.alert-container { margin-bottom: 1rem; }
+
+.alert {
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+html[data-bs-theme="dark"] .alert-danger {
+  background-color: #431c1c;
+  color: #ffb3b3;
+  border: 1px solid #a94442;
+}
+
+html[data-bs-theme="dark"] .alert-success {
+  background-color: #153b2a;
+  color: #9effc6;
+  border: 1px solid #21e271;
+}
+
+html[data-bs-theme="dark"] .alert-info {
+  background-color: #1b2634;
+  color: #9ac8ff;
+  border: 1px solid #337ab7;
+}

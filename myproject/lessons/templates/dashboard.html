@@ -1,0 +1,198 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>LinguaLearn — Dashboard</title>
+
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar app-nav py-2">
+    <div class="container-fluid px-3">
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn icon-btn d-lg-none" id="menuBtn"><i class="bi bi-list"></i></button>
+        <div class="brand-pill px-3 py-1">
+          <a href="{% url 'lessons:dashboard' %}" class="fw-bold text-black text-decoration-none">LinguaLearn</a>
+        </div>
+      </div>
+
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <button id="themeBtn" class="btn icon-btn" title="Toggle theme">
+          <i class="bi bi-sun-fill theme-sun"></i>
+          <i class="bi bi-moon-stars-fill d-none theme-moon"></i>
+        </button>
+        <div class="dropdown">
+          <button class="nav-avatar-btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile" class="avatar">
+            <i class="bi bi-caret-down-fill small"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><h6 class="dropdown-header">Hi, {{ user.first_name|default:"User" }}</h6></li>
+            <li><a class="dropdown-item" href="{% url 'lessons:vocabulary' %}"><i class="bi bi-book me-2"></i>Vocabulary</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'lessons:logout_user' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar p-3">
+      <nav class="d-grid gap-2">
+        <a class="btn side-link active text-start" href="{% url 'lessons:dashboard' %}"><i class="bi bi-house me-2"></i> Dashboard</a>
+        <a class="btn side-link text-start" href="{% url 'lessons:lessons' %}"><i class="bi bi-mortarboard me-2"></i> Lessons</a>
+        <a class="btn side-link text-start" href="{% url 'lessons:vocabulary' %}"><i class="bi bi-diagram-3 me-2"></i> Vocabulary</a>
+        <a class="btn side-link text-start" href="#"><i class="bi bi-graph-up me-2"></i> Progress</a>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-grow-1 p-3 p-md-4 p-lg-5">
+      <!-- Welcome -->
+      <section class="card rounded-4 mb-4">
+        <div class="card-body p-4 d-flex flex-wrap justify-content-between align-items-center">
+          <div>
+            <h2 class="section-title mb-1">Welcome back, {{ user.first_name|default:"Learner" }}!</h2>
+            <p class="mb-0 text-secondary">Track your progress and continue learning.</p>
+          </div>
+          <div class="text-center">
+            <div class="ring" id="todayRing" style="--pct:{{ progress.today_progress }}">
+              <span class="fw-bold" id="todayProgress">{{ progress.today_progress|floatformat:0 }}%</span>
+            </div>
+            <small class="d-block mt-1 text-secondary">Today’s Progress</small>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats -->
+      <section class="row g-3 mb-4 text-center">
+        <div class="col-md-3"><div class="stat-box"><div class="small text-secondary">Total Words</div><div class="fs-2 fw-bold" id="wordsLearned">{{ progress.words_learned }}</div></div></div>
+        <div class="col-md-3"><div class="stat-box"><div class="small text-secondary">XP</div><div class="fs-2 fw-bold" id="xpCount">{{ progress.xp|default:0 }}</div></div></div>
+        <div class="col-md-3">
+          <div class="stat-box">
+            <div class="small text-secondary">Streak</div>
+            <div class="fs-2 fw-bold d-flex justify-content-center align-items-center gap-2">
+              <span class="flame">🔥</span>
+              <span id="streakCount">{{ progress.streak_days }}</span>
+            </div>
+            <small class="text-secondary">days in a row</small>
+          </div>
+        </div>
+        <div class="col-md-3"><div class="stat-box"><div class="small text-secondary">Quizzes Completed</div><div class="fs-2 fw-bold" id="quizCount">{{ progress.quizzes_completed }}</div></div></div>
+        <div class="col-md-3"><div class="stat-box"><div class="small text-secondary">Lessons Completed</div><div class="fs-2 fw-bold" id="lessonsCompleted">{{ progress.lessons_completed }}</div></div></div>
+      </section>
+
+      <!-- Charts -->
+      <section class="row g-4 mb-4">
+        <div class="col-lg-8">
+          <div class="card rounded-4 shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="fw-semibold mb-3">XP Progress This Week</h5>
+              <div class="chart-wrapper">
+                <canvas id="xpChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card rounded-4 shadow-sm h-100 text-center">
+            <div class="card-body">
+              <h5 class="fw-semibold mb-3">Difficulty Breakdown</h5>
+              <canvas id="difficultyChart" height="260"></canvas>
+              <p class="small mt-2 text-secondary">Words learned by difficulty</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="small text-center py-3 text-secondary border-top">© <span id="year"></span> LinguaLearn</footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Live stats update
+    async function updateDashboard() {
+  try {
+    const res = await fetch("{% url 'lessons:user_stats' %}");
+    if (!res.ok) throw new Error("Failed to fetch stats");
+    const d = await res.json();
+
+    // Update text values
+    document.getElementById('wordsLearned').textContent = d.words_learned ?? 0;
+    document.getElementById('xpCount').textContent = d.xp ?? 0;
+    document.getElementById('streakCount').textContent = d.streak_days ?? 0;
+    document.getElementById('quizCount').textContent = d.quizzes_completed ?? 0;
+    document.getElementById('lessonsCompleted').textContent = d.lessons_completed ?? 0;
+
+    // Update today’s progress ring
+    const ring = document.getElementById('todayRing');
+    ring.style.setProperty('--pct', d.today_progress || 0);
+    document.getElementById('todayProgress').textContent = `${d.today_progress || 0}%`;
+
+  } catch (err) {
+    console.error("Dashboard update failed:", err);
+  }
+}
+
+
+    // Load charts
+    async function loadCharts(){
+      const res = await fetch("{% url 'lessons:difficulty_stats' %}");
+      const data = await res.json();
+
+      // XP line chart
+      new Chart(document.getElementById("xpChart"), {
+        type: "line",
+        data: {
+          labels: data.xp_chart.map(d=>d.day),
+          datasets: [{
+            label: "XP Gained",
+            data: data.xp_chart.map(d=>d.xp),
+            borderColor: "#21e271",
+            backgroundColor: "rgba(33,226,113,0.15)",
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true } },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Difficulty pie chart
+      new Chart(document.getElementById("difficultyChart"), {
+        type: "pie",
+        data: {
+          labels: ["Easy", "Medium", "Hard"],
+          datasets: [{
+            data: [data.easy, data.medium, data.hard],
+            backgroundColor: ["#21e271","#ffcd56","#ff6384"]
+          }]
+        },
+        options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+      });
+    }
+
+    updateDashboard();
+    loadCharts();
+  </script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+.avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid var(--border, #1f2b36)}
+  .avatar-sm{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--border, #1f2b36)}
+  .nav-avatar-btn{border:1px solid var(--border, #1f2b36);background:transparent;color:inherit}
+  .nav-avatar-btn:hover{background:rgba(255,255,255,.06)}
+  html[data-theme="light"] .nav-avatar-btn:hover{background:#eef4f8}
+  /* optional: tighter line-height for menu items */
+  .profile-menu .dropdown-item{line-height:1.25rem}
+
+
+    /* ===== Theme tokens ===== */
+    :root{
+      --bg:#0f1720; --panel:#0c1520; --panel-2:#111c26; --border:#1f2b36;
+      --text:#e6f0f6; --muted:#9fb2c1; --accent:#21e271; --ink:#052c15;
+      --ring:0 0 0 .25rem rgba(33,226,113,.35);
+      --chip:#0b141c; --chip-br:#233546; --track:#13222d;
+      --shadow:0 8px 30px rgba(0,0,0,.35);
+    }
+    html[data-theme="light"]{
+      --bg:#f6f8fb; --panel:#fff; --panel-2:#fff; --border:#d9e1ea;
+      --text:#0b1b2b; --muted:#3b4a5a; --accent:#1fe26a; --ink:#052c15;
+      --ring:0 0 0 .25rem rgba(31,226,106,.25);
+      --chip:#f4f8fb; --chip-br:#e0e8f2; --track:#e8eef5;
+      --shadow:0 8px 24px rgba(3,27,78,.08);
+    }
+
+    /* ===== Layout: footer sticks to bottom ===== */
+    html,body{height:100%}
+    body{background:var(--bg);color:var(--text)}
+    .page{min-height:100vh;display:flex;flex-direction:column}
+    main{flex:1} /* ensures footer pushes to the bottom */
+
+    a{color:inherit;text-decoration:none} a:hover{text-decoration:underline}
+    .topbar{position:sticky;top:0;z-index:1030;background:linear-gradient(0deg,var(--panel-2),var(--panel));border-bottom:1px solid var(--border)}
+    .brand-pill{background:var(--accent);color:var(--ink);border-radius:999px;font-weight:800}
+    .card{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow)}
+    .btn-accent{background:var(--accent);color:var(--ink);border:0}
+    .btn-accent:hover{filter:brightness(1.06)}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+    .btn-outline:hover{background:var(--chip)}
+    .form-control,.input-group-text{background:var(--chip);border-color:var(--chip-br);color:var(--text)}
+    .form-control:focus,.btn:focus{box-shadow:var(--ring);border-color:var(--accent)}
+    .small-muted{color:var(--muted)}
+    footer{border-top:1px solid var(--border);color:var(--muted)}
+
+    /* media */
+    .thumb{border-radius:12px;overflow:hidden;border:1px solid var(--chip-br);background:#000}
+    .thumb img{width:100%;height:200px;object-fit:cover}
+
+    /* audio + learned chips (ALIGNMENT FIX) */
+    .chip-row{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
+    .chip-btn{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--chip-br);background:var(--chip);color:var(--text);border-radius:999px;padding:.45rem .9rem;line-height:1}
+    .chip-btn:hover{background:rgba(255,255,255,.06)}
+    html[data-theme="light"] .chip-btn:hover{background:#eef4f8}
+    .pill-learned{display:inline-flex;align-items:center;gap:.35rem;background:var(--accent);color:var(--ink);border-radius:999px;padding:.35rem .65rem;font-size:.9rem;line-height:1;border:0}
+
+    /* progress bar + ring */
+    .progress{height:10px;background:var(--chip);border:1px solid var(--chip-br)}
+    .progress-bar{background:var(--accent)}
+    .ring{--pct:0;width:74px;height:74px;border-radius:50%;
+      background:conic-gradient(var(--accent) calc(var(--pct) * 1%), var(--track) 0);
+      display:grid;place-items:center;box-shadow:inset 0 0 0 10px var(--panel);border:1px solid var(--border)}
+    .ring span{font-weight:800;color:#0b1b2b}
+    html[data-theme="dark"] .ring span{color:#eaf9f2}
+    html[data-theme="dark"] .fs-4{color:#eaf9f2}
+    html[data-theme="dark"] .fs-5{color:#eaf9f2}
+ html[data-theme="dark"] .dropdown-menu{background-color:black}
+ html[data-theme="dark"] .dropdown-item{color:white}
+    /* study mode */
+    .study-wrap{max-width:760px;margin-inline:auto}
+    .study-controls .btn{min-width:120px}
+    .mode-toggle .btn{min-width:140px}
+
+a.btn,
+a.btn:link,
+a.btn:visited{
+  text-decoration: none !important;
+  color: inherit !important;           /* don't use link color on buttons */
+}
+
+/* Accent button (green) */
+.btn-accent{
+  background: var(--accent) !important;
+  color: var(--ink) !important;
+  border: 0 !important;
+}
+
+
+html[data-theme="dark"] li:hover{
+  background: var(--bg);
+  
+}
+
+.btn-accent:hover,
+.btn-accent:focus,
+.btn-accent:active{
+  text-decoration: none !important;
+  color: var(--ink) !important;
+  /* brighten a bit in dark, darken a bit in light */
+  filter: none;
+  box-shadow: 0 0 0 .25rem rgba(33,226,113,.25);   /* focus ring */
+}
+html[data-theme="dark"] .btn-accent:hover{ filter: brightness(1.08); }
+html[data-theme="light"] .btn-accent:hover{ filter: brightness(.96); }
+
+/* Outline button in dark → lighten on hover */
+.btn-outline{
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+html[data-theme="dark"] .btn-outline:hover{
+  background: rgba(255,255,255,.06);
+  border-color: var(--accent);
+  color: #fff;
+}
+html[data-theme="light"] .btn-outline:hover{
+  background: #f4f8fb;
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* Lesson rows: clearer hover feedback in dark */
+.lesson-row{
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+html[data-theme="dark"] .lesson-row:hover{
+  background: rgba(255,255,255,.03);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(33,226,113,.15) inset;
+}
+
+/* Headings/labels: ensure readable in dark */
+html[data-theme="dark"] h1, 
+html[data-theme="dark"] h2, 
+html[data-theme="dark"] h3, 
+html[data-theme="dark"] h4, 
+html[data-theme="dark"] h5, 
+html[data-theme="dark"] h6,
+html[data-theme="dark"] .form-label,
+html[data-theme="dark"] .card h5 {
+  color: #fff;   /* stronger contrast */
+}
+
+
+html[data-theme="dark"].dropdown-item:hover {
+
+background-color: black;
+
+}
+
+    html[data-theme="light"]  .nav-avatar-btn:hover{background:#eef4f8}
+    html[data-theme="light"] h3,
+html[data-theme="light"] h5,
+html[data-theme="light"] .fw-semibold,
+html[data-theme="light"] .small,
+html[data-bs-theme="light"] h3,
+html[data-bs-theme="light"] h5,
+html[data-bs-theme="light"] .fw-semibold,
+html[data-bs-theme="light"] .form-label,
+html[data-bs-theme="light"] .small {
+  color: #000;
+}
+
+/* Dark: force ink to white on key text elems */
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h5,
+html[data-theme="dark"] .fw-semibold,
+html[data-theme="dark"] .small,
+html[data-bs-theme="dark"] h3,
+html[data-bs-theme="dark"] h5,
+html[data-bs-theme="dark"] .fw-semibold,
+html[data-bs-theme="dark"] .form-label,
+html[data-bs-theme="dark"] .small {
+  color: #fff;
+}
+
+
+/* Smooth transition */
+.side-link, .btn-accent, .btn-outline { transition: background-color .15s ease, color .15s ease, border-color .15s ease; }
+
+/* DARK THEME hover: green border + white background + black text */
+html[data-theme="dark"] .side-link:hover,
+html[data-theme="dark"] .btn-outline:hover,
+html[data-bs-theme="dark"] .side-link:hover,
+html[data-theme="dark"] .btn-accent:hover,
+html[data-theme="dark"] .bi:hover,
+html[data-bs-theme="dark"] .btn-outline:hover{
+  background: #21e271;
+  color: #000;
+  text-decoration: none;
+  border-color: var(--accent);
+}
+
+/* LIGHT THEME hover: green background + black border + dark ink text */
+html[data-theme="light"] .side-link:hover,
+html[data-theme="light"] .btn-outline:hover,
+html[data-bs-theme="light"] .side-link:hover,
+html[data-bs-theme="light"] .btn-accent:hover,
+html[data-bs-theme="light"] .btn-outline:hover{
+  background: var(--accent);
+  color: #000;              /* readable on green; change to var(--ink) if you prefer */
+  border-color: #000;
+   text-decoration: none;
+  text-decoration: none;    /* keep it “buttony” */
+}
+
+/* Small overrule so global link hover doesn’t touch buttons */
+a:hover:not(.btn){ text-decoration: underline; }

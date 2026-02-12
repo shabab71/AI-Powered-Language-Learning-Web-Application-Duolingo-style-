@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Unit 1 — Basic | LinguaLearn</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #f6fff7 0%, #eaf8ea 100%);
+      font-family: "Poppins", sans-serif;
+      color: #1a1a1a;
+    }
+
+    .lesson-container {
+      max-width: 800px;
+      margin: 60px auto;
+      background: white;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      position: relative;
+    }
+
+    h2 {
+      font-weight: 700;
+      color: #097037;
+      margin-bottom: 30px;
+    }
+
+    /* Progress bar */
+    .progress {
+      height: 12px;
+      margin-bottom: 25px;
+      border-radius: 20px;
+      background-color: #e9f5ec;
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, #0aa04f, #097037);
+      transition: width 0.5s ease-in-out;
+    }
+
+    /* Word cards */
+    .word-card {
+      display: none;
+    }
+
+    .word-card.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .word-card img {
+      width: 240px;
+      max-height: 200px;
+      object-fit: contain;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .word-card h3 {
+      font-size: 1.8rem;
+      color: #097037;
+      margin-bottom: 10px;
+    }
+
+    .word-card p {
+      font-size: 1.2rem;
+      color: #444;
+      margin-bottom: 25px;
+    }
+
+    /* Green glowing audio buttons */
+    .btn-glow {
+      background: linear-gradient(135deg, #0aa04f, #097037);
+      color: white;
+      border: none;
+      border-radius: 40px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 12px rgba(9, 112, 55, 0.4);
+    }
+
+    .btn-glow:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(9, 112, 55, 0.6);
+    }
+
+    /* Navigation buttons */
+    .nav-btn {
+      border: none;
+      background: transparent;
+      font-size: 2rem;
+      color: #555;
+      transition: color 0.2s;
+    }
+
+    .nav-btn:hover {
+      color: #097037;
+    }
+
+    /* Finish button */
+    #finishBtn {
+      background: linear-gradient(135deg, #0aa04f, #097037);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1.1rem;
+      padding: 10px 24px;
+      transition: 0.3s ease;
+      box-shadow: 0 0 15px rgba(9, 112, 55, 0.3);
+    }
+
+    #finishBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(9, 112, 55, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #777;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="lesson-container">
+    <h2>Unit 1 • Introduce Yourself (Basic)</h2>
+
+    <!-- Progress bar -->
+    <div class="progress mb-4">
+      <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+    </div>
+
+    {% for word in words %}
+      <div class="word-card {% if forloop.first %}active{% endif %}" id="word-{{ forloop.counter }}">
+        {% if word.image %}
+          <img src="{{ word.image.url }}" alt="{{ word.english_word }}" />
+        {% endif %}
+        <h3>{{ word.english_word }}</h3>
+        <p>{{ word.hindi_word }}</p>
+
+        <div class="d-flex justify-content-center gap-3 mt-3">
+          {% if word.english_audio %}
+            <button class="btn-glow" onclick="playAudio('{{ word.english_audio.url }}')">
+              <i class="bi bi-play-circle-fill"></i> English
+            </button>
+          {% else %}
+            <button class="btn-glow" onclick="tts('{{ word.english_word }}', 'en-US')">
+              <i class="bi bi-play-circle-fill"></i> English
+            </button>
+          {% endif %}
+
+          {% if word.hindi_audio %}
+            <button class="btn-glow" onclick="playAudio('{{ word.hindi_audio.url }}')">
+              <i class="bi bi-play-circle-fill"></i> Hindi
+            </button>
+          {% else %}
+            <button class="btn-glow" onclick="tts('{{ word.hindi_word }}', 'hi-IN')">
+              <i class="bi bi-play-circle-fill"></i> Hindi
+            </button>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p>No words available for this lesson yet.</p>
+    {% endfor %}
+
+    <div class="mt-5 d-flex justify-content-between align-items-center">
+      <button id="prevBtn" class="nav-btn"><i class="bi bi-arrow-left-circle"></i></button>
+      <button id="nextBtn" class="nav-btn"><i class="bi bi-arrow-right-circle"></i></button>
+    </div>
+
+    <div class="mt-4">
+      <button id="finishBtn">
+        Finish Lesson <i class="bi bi-check2-circle ms-1"></i>
+      </button>
+    </div>
+  </div>
+
+  <footer>
+    © <span id="year"></span> LinguaLearn — Learn Hindi the fun way.
+  </footer>
+
+  <script>
+    const cards = document.querySelectorAll('.word-card');
+    const progressBar = document.getElementById('progressBar');
+    let i = 0;
+    const total = cards.length;
+
+    const updateProgress = () => {
+      const pct = ((i + 1) / total) * 100;
+      progressBar.style.width = `${pct}%`;
+    };
+
+    const showCard = n => {
+      cards.forEach(c => c.classList.remove('active'));
+      cards[n].classList.add('active');
+      updateProgress();
+    };
+
+    document.getElementById('nextBtn').onclick = () => {
+      if (i < total - 1) i++;
+      showCard(i);
+    };
+    document.getElementById('prevBtn').onclick = () => {
+      if (i > 0) i--;
+      showCard(i);
+    };
+
+    function playAudio(url) {
+      const audio = new Audio(url);
+      audio.play().catch(e => console.warn('Audio playback failed:', e));
+    }
+
+    function tts(text, lang) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = lang;
+      speechSynthesis.speak(utter);
+    }
+
+    // ✅ Mark lesson complete
+    document.getElementById('finishBtn').addEventListener('click', async () => {
+  const res = await fetch("{% url 'lessons:mark_lesson_basic_completed' %}", {
+    method: "POST",
+    headers: { "X-CSRFToken": "{{ csrf_token }}", "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ "lesson_name": "Unit 1 - Basic" })
+  });
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) {
+    window.location.href = "{% url 'lessons:lessons' %}";
+  }
+});
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+    updateProgress();
+  </script>
+</body>
+</html>
